@@ -14,6 +14,7 @@ def get_drink_hash(drink)
 end
 
 def get_ingredients(drink_hash)
+  # Refactor into an iterator using a counter & string interpolation
   return [] if drink_hash == nil
   ingredient_array = drink_hash.fetch_values("strIngredient1",
  "strIngredient2",
