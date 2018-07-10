@@ -18,9 +18,8 @@ ActiveRecord::Schema.define(version: 20180710171544) do
   end
 
   create_table "drinks", force: :cascade do |t|
-    t.string  "name"
-    t.string  "instructions"
-    t.integer "drinkingredient_id"
+    t.string "name"
+    t.string "instructions"
   end
 
   create_table "favoritedrinks", force: :cascade do |t|
@@ -30,7 +29,7 @@ ActiveRecord::Schema.define(version: 20180710171544) do
 
   create_table "ingredients", force: :cascade do |t|
     t.string "name"
-    t.string "type"
+    t.string "category"
     t.string "keyword"
   end
 
