@@ -12,9 +12,9 @@
 
 ActiveRecord::Schema.define(version: 20180710171544) do
 
-  create_table "drinkingredients", force: :cascade do |t|
-    t.integer "drinkid"
-    t.integer "ingredientid"
+  create_table "drink_ingredients", force: :cascade do |t|
+    t.integer "drink_id"
+    t.integer "ingredient_id"
   end
 
   create_table "drinks", force: :cascade do |t|
@@ -23,8 +23,8 @@ ActiveRecord::Schema.define(version: 20180710171544) do
   end
 
   create_table "favoritedrinks", force: :cascade do |t|
-    t.integer "drinkid"
-    t.integer "userid"
+    t.integer "drink_id"
+    t.integer "user_id"
   end
 
   create_table "ingredients", force: :cascade do |t|
