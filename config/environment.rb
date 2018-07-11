@@ -10,5 +10,5 @@ require_all 'lib'
 require_all 'dev'
 # require_all 'db'
 # require_relative '../dev/api_communicator.rb'
-
+ActiveRecord::Base.logger = nil
 # binding.pry
