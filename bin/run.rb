@@ -81,6 +81,7 @@ def actions(user_input, current_user)
     puts "Success!"
     puts "Is there anything else you'd like to do?"
     user_input = gets.chomp
+    actions(user_input, current_user)
   elsif user_input == "Add Drink"
     puts "What drink would you like to add?"
     user_input = gets.chomp
@@ -88,6 +89,7 @@ def actions(user_input, current_user)
     puts "Success!"
     puts "Is there anything else you'd like to do?"
     user_input = gets.chomp
+    actions(user_input, current_user)
   elsif user_input == "EXIT" || user_input == "exit" || user_input == "QUIT" || user_input == "quit"
     exit
   else
