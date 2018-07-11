@@ -83,7 +83,7 @@ def actions(user_input, current_user)
       find = current_user.find_drink(drink_name)
       puts "#{find.name} exists! Here are the instructions: "
       puts "#{find.instructions}"
-      ingredient_names = drink_ingredients.each do |ingredient|
+      drink_ingredients.each do |ingredient|
         puts "#{counter}. #{ingredient.name}"
         counter += 1
       end

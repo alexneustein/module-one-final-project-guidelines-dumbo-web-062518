@@ -33,6 +33,6 @@ class User < ActiveRecord::Base
   end
 
   def find_drink_ingredients(drink_name)
-    found = Drink.find_by(name: drink_name).ingredients
+    Drink.find_by(name: drink_name).ingredients
   end
 end
