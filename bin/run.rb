@@ -1,6 +1,6 @@
 require_relative '../config/environment'
 
-
+# cocktail_array = ["Martini","Manhattan","Old Fashioned","Mint Julep","Mojito","Margarita","Daiquiri","Tom Collins","Martinez","Brandy Cocktail","Brandy Daisy","Sidecar","Whiskey Sour","Sazerac","New Orleans Fizz","French 75","Negroni","Brandy Alexander","Bronx Cocktail"]
 
 puts "Welcome to Access Labs' Cocktail Library!"
 puts "-----------------------------------------"

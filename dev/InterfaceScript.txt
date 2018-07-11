@@ -1,1 +1,33 @@
 dryvermouth = Ingredient.create(name: "Dry Vermouth", category: "liqueur", keyword: ["vermouth", "white"])
+
+
+MVP Stories
+
+User can find a drink from the name. 
+User can look at the drink profile, containing the name, ingredients, and instructions. 
+	Here, the user can add the drink as a favorite, and also add all the ingredients to their pantry. 
+User can receive the list of ingredients they have in their pantry. 
+User can receive a list of favorite drinks. 
+User can add a new ingredient to their pantry. 
+User can receive a random drink. 
+
+
+User can enter their name, which either associates the user to an existing user. 
+
+User can request that the app scrape the internet DB to find a drink that is not found in the app DB, and then add the drink, the ingredients, and the associations between them, to the database. 
+
+User can see a list of all available ingredients, listed alphabetically. 
+
+
+
+ - Finish populating the associations
+ - Finish populating the ingredient categories
+ - Finish populating the ingredient keywords
+
+
+ - downcast all of the ingredient and drink names
+
+
+
+Drink.find_by(id: 1).ingredients
+
