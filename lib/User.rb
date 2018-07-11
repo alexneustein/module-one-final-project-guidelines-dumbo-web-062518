@@ -35,9 +35,10 @@ class User < ActiveRecord::Base
   def find_drink_ingredients(drink_name)
     counter = 1
     found = Drink.find_by(name: drink_name).ingredients
-    found.each do |ingredient|
-      puts "#{counter}. #{ingredient.name}"
-      counter += 1
-    end
+    found.each { |ingredient| ingredient }
+    #found.each do |ingredient|
+      # puts "#{counter}. #{ingredient.name}"
+      # counter += 1
+  #  end
   end
 end
