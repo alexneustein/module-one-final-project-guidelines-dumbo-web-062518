@@ -74,6 +74,26 @@ def actions(user_input, current_user)
       user_input = gets.chomp
       actions(user_input, current_user)
     end
+  elsif user_input == "Add Ingredient"
+    puts "What ingredient would you like to add?"
+    user_input = gets.chomp
+    current_user.ingredients << current_user.find_or_create_ingredient(user_input)
+    puts "Success!"
+    puts "Is there anything else you'd like to do?"
+    user_input = gets.chomp
+  elsif user_input == "Add Drink"
+    puts "What drink would you like to add?"
+    user_input = gets.chomp
+    current_user.drinks << current_user.find_or_create_drink(user_input)
+    puts "Success!"
+    puts "Is there anything else you'd like to do?"
+    user_input = gets.chomp
+  elsif user_input == "EXIT" || user_input == "exit" || user_input == "QUIT" || user_input == "quit"
+    exit
+  else
+    puts "Command not recognized. Please try again:"
+    user_input = gets.chomp
+    actions(user_input, current_user)
   end
 end
 
