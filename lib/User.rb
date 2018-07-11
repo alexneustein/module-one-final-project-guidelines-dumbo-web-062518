@@ -24,11 +24,15 @@ class User < ActiveRecord::Base
      return self.find_by(name: name_string).id if self.find_by(name: name_string) != nil
    end
 
- def create_drink(drink_name)
-   Drink.create(name: drink_name)
- end
+   def create_drink(drink_name)
+    Drink.create(name: drink_name)
+  end
 
- def create_ingredient(ingredient_name)
+  def create_ingredient(ingredient_name)
 
- end
+  end
+
+  def find_drink_ingredients(drink_name)
+    found = Drink.find_by(name: drink_name).ingredients
+  end
 end

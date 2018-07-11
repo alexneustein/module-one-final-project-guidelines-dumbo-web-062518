@@ -78,9 +78,15 @@ def actions(user_input, current_user)
     puts "Which drink are you looking for?"
     drink_name = gets.chomp
     if current_user.find_drink(drink_name)
-      find = current_user.find_drink(drink_name) #.each {|drink| puts "#{drink_name} exists! Here are the Instructions: #{drink.instructions}"}
+      counter = 1
+      drink_ingredients = current_user.find_drink_ingredients(drink_name)
+      find = current_user.find_drink(drink_name)
       puts "#{find.name} exists! Here are the instructions: "
       puts "#{find.instructions}"
+      ingredient_names = drink_ingredients.each do |ingredient|
+        puts "#{counter}. #{ingredient.name}"
+        counter += 1
+      end
       puts "Is there anything else you'd like to do?"
       user_input = gets.chomp
       actions(user_input, current_user)
