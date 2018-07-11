@@ -40,6 +40,7 @@ def actions(user_input, current_user)
     menu.choice 'See My Ingredients', "1"
     menu.choice 'See Favorite Drinks', "2"
     menu.choice 'Find Drink By Name', "3"
+    menu.choice 'Browse All Drinks', "7"
     menu.choice 'Find Ingredient By Name', "4"
     menu.choice 'Add Ingredient to Pantry', "5"
     menu.choice 'Add Favorite Drink', "6"
@@ -50,6 +51,7 @@ def actions(user_input, current_user)
       menu.choice 'See My Ingredients', "1"
       menu.choice 'See Favorite Drinks', "2"
       menu.choice 'Find Drink By Name', "3"
+      menu.choice 'Browse All Drinks', "7"
       menu.choice 'Find Ingredient By Name', "4"
       menu.choice 'Add Ingredient to Pantry', "5"
       menu.choice 'Add Favorite Drink', "6"
@@ -127,6 +129,22 @@ def actions(user_input, current_user)
     puts "Is there anything else you'd like to do?"
     user_input = gets.chomp
     actions(user_input, current_user)
+  elsif user_input == "7"
+    drink_browse = prompt.select("All Drinks:") do |menu|
+      Drink.all.each do |drink|
+        menu.choice drink.name, drink.id
+      end
+      menu.choice 'EXIT', "EXIT"
+    end
+    # binding.pry
+    if drink_browse != "exit"
+      find = current_user.find_by_id(drink_browse)
+      puts "#{find.name} exists! Here are the instructions: "
+      puts "#{find.instructions}"
+    end
+      puts "Is there anything else you'd like to do?"
+      user_input = gets.chomp
+      actions(user_input, current_user)
   elsif user_input == "EXIT" || user_input == "exit" || user_input == "QUIT" || user_input == "quit"
     exit
   else

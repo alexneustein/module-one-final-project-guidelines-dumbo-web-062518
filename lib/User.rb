@@ -8,6 +8,10 @@ class User < ActiveRecord::Base
     Drink.find_by(name: drink_name)
   end
 
+  def find_by_id(drink_id)
+    Drink.find_by(id: drink_id)
+  end
+
   def find_or_create_drink(drink_name)
     Drink.find_or_create_by(name: drink_name)
   end
