@@ -31,3 +31,13 @@ User can see a list of all available ingredients, listed alphabetically.
 
 Drink.find_by(id: 1).ingredients
 
+COLORS = {
+    :black   => "30",
+    :blue    => "34",
+    :cyan    => "36",
+    :gray    => "30",
+    :green   => "32",
+    :purple  => "35",
+    :red     => "31",
+    :white   => "37",
+    :yellow  => "33"

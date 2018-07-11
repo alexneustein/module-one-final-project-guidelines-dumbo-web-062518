@@ -2,59 +2,79 @@ require_relative '../config/environment'
 
 # cocktail_array = ["Martini","Manhattan","Old Fashioned","Mint Julep","Mojito","Margarita","Daiquiri","Tom Collins","Martinez","Brandy Cocktail","Brandy Daisy","Sidecar","Whiskey Sour","Sazerac","New Orleans Fizz","French 75","Negroni","Brandy Alexander","Bronx Cocktail"]
 
+
 def cli_welcome
-  puts "Welcome to Access Labs' Cocktail Library!"
-  puts "-----------------------------------------"
+  puts "Welcome to Access Labs' Cocktail Library!".underline
+  puts " "
 end
 
 def cli_ask_name
-  puts "What is your name?"
+  puts "What is your name?".green
 end
 
 def cli_what_to_do
-  puts "What would you like to do? (hint: 'i' for instructions)"
+  puts "What would you like to do? (hint: 'i' for instructions)".green
 end
 
 def cli_input
   input = ""
   while input == ""
     input = gets.chomp
-    puts "Invalid entry! Please try again." if input == ""
+    puts "Invalid entry! Please try again.".yellow if input == ""
   end
   return input
 end
 
 def find_or_create_user(name)
   if User.find_by(name: name) == nil
-    puts "Welcome, #{name}!"
+    puts "Welcome, #{name}!".cyan
   else
-    puts "Welcome back, #{name}!"
+    puts "Welcome back, #{name}!".cyan
   end
   User.find_or_create_by(name: name)
 end
 
 def actions(user_input, current_user)
+  prompt = TTY::Prompt.new
+  user_input = prompt.select("Main Menu:") do |menu|
+    menu.choice 'See My Ingredients', "1"
+    menu.choice 'See Favorite Drinks', "2"
+    menu.choice 'Find Drink By Name', "3"
+    menu.choice 'Find Ingredient By Name', "4"
+    menu.choice 'Add Ingredient to Pantry', "5"
+    menu.choice 'Add Favorite Drink', "6"
+    menu.choice 'EXIT', "EXIT"
+  end
   if user_input == "i"
-    puts "See Pantry: Check Ingredients"
-    puts "See Favorite Drinks: Check Drinks"
-    puts "Find Specific Drink: Find Drink"
-    puts "Find Specific Ingredient: Find Ingredient"
-    puts "Add Ingredient to Pantry: Add Ingredient"
-    puts "Add Favorite Drink: Add Drink"
-    puts "Leave: EXIT"
+    user_input = prompt.select("Main Menu:") do |menu|
+      menu.choice 'See My Ingredients', "1"
+      menu.choice 'See Favorite Drinks', "2"
+      menu.choice 'Find Drink By Name', "3"
+      menu.choice 'Find Ingredient By Name', "4"
+      menu.choice 'Add Ingredient to Pantry', "5"
+      menu.choice 'Add Favorite Drink', "6"
+      menu.choice 'EXIT', "EXIT"
+    end
+    # puts "1)".cyan + " See My Ingredients"
+    # puts "2)".cyan + " See Favorite Drinks"
+    # puts "3)".cyan + " Find Drink By Name"
+    # puts "4)".cyan + " Find Ingredient By Name"
+    # puts "5)".cyan + " Add Ingredient to Pantry"
+    # puts "6)".cyan + " Add Favorite Drink"
+    # puts "To leave, type " + "EXIT".red
+    # user_input = gets.chomp
+    actions(user_input, current_user)
+  elsif user_input == "1"
+    current_user.ingredients.each { |ingredient| puts "#{ingredient.name}".cyan }
+    puts "Is there anything else you'd like to do?".green
     user_input = gets.chomp
     actions(user_input, current_user)
-  elsif user_input == "Check Ingredients"
-    current_user.ingredients.each { |ingredient| puts "#{ingredient.name}" }
-    puts "Is there anything else you'd like to do?"
-    user_input = gets.chomp
-    actions(user_input, current_user)
-  elsif user_input == "Check Drinks"
+  elsif user_input == "2"
     current_user.drinks.each { |drink| puts "#{drink.name}" }
     puts "Is there anything else you'd like to do?"
     user_input = gets.chomp
     actions(user_input, current_user)
-  elsif user_input == "Find Drink"
+  elsif user_input == "3"
     puts "Which drink are you looking for?"
     drink_name = gets.chomp
     if current_user.find_drink(drink_name)
@@ -70,7 +90,7 @@ def actions(user_input, current_user)
       user_input = gets.chomp
       actions(user_input, current_user)
     end
-  elsif user_input == "Find Ingredient"
+  elsif user_input == "4"
     puts "Which ingredient are you looking for?"
     ingredient_name = gets.chomp
     if current_user.find_ingredient(ingredient_name)
@@ -85,7 +105,7 @@ def actions(user_input, current_user)
       user_input = gets.chomp
       actions(user_input, current_user)
     end
-  elsif user_input == "Add Ingredient"
+  elsif user_input == "5"
     puts "What ingredient would you like to add?"
     user_input = gets.chomp
     current_user.ingredients << current_user.find_or_create_ingredient(user_input)
@@ -93,7 +113,7 @@ def actions(user_input, current_user)
     puts "Is there anything else you'd like to do?"
     user_input = gets.chomp
     actions(user_input, current_user)
-  elsif user_input == "Add Drink"
+  elsif user_input == "6"
     puts "What drink would you like to add?"
     user_input = gets.chomp
     current_user.drinks << current_user.find_or_create_drink(user_input)
