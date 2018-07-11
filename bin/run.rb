@@ -17,9 +17,10 @@ user_input = gets.chomp
 
 # Create helper method for 'is there anything else?'
 
-def continue()
-  actions(user_input, current_user)
-end
+# def continue?
+#   puts "Is there anything else you'd like to do?"
+#   user_input = gets.chomp
+# end
 
 def actions(user_input, current_user)
   if user_input == "i"
@@ -34,7 +35,9 @@ def actions(user_input, current_user)
     actions(user_input, current_user)
   elsif user_input == "Check Ingredients"
     current_user.ingredients.each { |ingredient| puts "#{ingredient.name}" }
-    continue(user_input, current_user)
+    puts "Is there anything else you'd like to do?"
+    user_input = gets.chomp
+    actions(user_input, current_user)
   elsif user_input == "Check Drinks"
     current_user.drinks.each { |drink| puts "#{drink.name}" }
     puts "Is there anything else you'd like to do?"
@@ -52,7 +55,7 @@ def actions(user_input, current_user)
       actions(user_input, current_user)
     else
       puts "This drink doesn't exist in your favorites!"
-      puts "If you'd like to add it, please do so with Add Drink"
+      puts "Is there anything else you'd like to do?"
       user_input = gets.chomp
       actions(user_input, current_user)
     end
@@ -67,7 +70,7 @@ def actions(user_input, current_user)
       actions(user_input, current_user)
     else
       puts "This ingredient doesn't exist in your pantry!"
-      puts "If you'd like to add it, please do so with Add Ingredient"
+      puts "Is there anything else you'd like to do?"
       user_input = gets.chomp
       actions(user_input, current_user)
     end
