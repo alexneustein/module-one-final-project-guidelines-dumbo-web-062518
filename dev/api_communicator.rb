@@ -90,3 +90,11 @@ def make_joiner_entries(table1, table2, id_hash)
     end
   end
 end
+
+def bulk_joiner
+  cocktail_array = ["Martini","Manhattan","Old Fashioned","Mint Julep","Mojito","Margarita","Daiquiri","Tom Collins","Martinez","Brandy Cocktail","Brandy Daisy","Sidecar","Whiskey Sour","Sazerac","New Orleans Fizz","French 75","Negroni","Brandy Alexander","Bronx Cocktail"]
+
+  cocktail_array.each do |cocktail|
+    make_joiner_entries(Drink, Ingredient, get_drink_id_and_ingredient_ids(cocktail))
+  end
+end
