@@ -22,7 +22,7 @@ ActiveRecord::Schema.define(version: 20180710171544) do
     t.string "instructions"
   end
 
-  create_table "favoritedrinks", force: :cascade do |t|
+  create_table "favorite_drinks", force: :cascade do |t|
     t.integer "drink_id"
     t.integer "user_id"
   end
@@ -33,7 +33,7 @@ ActiveRecord::Schema.define(version: 20180710171544) do
     t.string "keyword"
   end
 
-  create_table "userpantrys", force: :cascade do |t|
+  create_table "user_pantries", force: :cascade do |t|
     t.integer "user_id"
     t.integer "ingredient_id"
   end

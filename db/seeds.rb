@@ -49,12 +49,12 @@ def build_master_list(drink_names_array)
   master_ingredient_list
 end
 
-def ingredient_seed(cocktail_array)
+# def ingredient_seed(cocktail_array)
   master_list_array = build_master_list(cocktail_array)
   master_list_array.each do |ingredient|
     Ingredient.create(name: ingredient)
   end
-end
+# end
 
 def build_drinks(drink_names_array)
   master_drinks = {}
