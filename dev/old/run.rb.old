@@ -2,36 +2,25 @@ require_relative '../config/environment'
 
 # cocktail_array = ["Martini","Manhattan","Old Fashioned","Mint Julep","Mojito","Margarita","Daiquiri","Tom Collins","Martinez","Brandy Cocktail","Brandy Daisy","Sidecar","Whiskey Sour","Sazerac","New Orleans Fizz","French 75","Negroni","Brandy Alexander","Bronx Cocktail"]
 
-def cli_welcome
-  puts "Welcome to Access Labs' Cocktail Library!"
-  puts "-----------------------------------------"
-end
-
-def cli_ask_name
-  puts "What is your name?"
-end
-
-def cli_what_to_do
-  puts "What would you like to do? (hint: 'i' for instructions)"
-end
-
-def cli_input
-  input = ""
-  while input == ""
-    input = gets.chomp
-    puts "Invalid entry! Please try again." if input == ""
-  end
-  return input
-end
-
-def find_or_create_user(name)
-  if User.find_by(name: name) == nil
-    puts "Welcome, #{name}!"
-  else
-    puts "Welcome back, #{name}!"
-  end
+puts "Welcome to Access Labs' Cocktail Library!"
+puts "-----------------------------------------"
+puts "What is your name?"
+name = gets.chomp
+def find_user(name)
   User.find_or_create_by(name: name)
 end
+
+current_user = find_user(name)
+
+puts "What would you like to do? (hint: 'i' for instructions)"
+user_input = gets.chomp
+
+# Create helper method for 'is there anything else?'
+
+# def continue?
+#   puts "Is there anything else you'd like to do?"
+#   user_input = gets.chomp
+# end
 
 def actions(user_input, current_user)
   if user_input == "i"
@@ -109,3 +98,13 @@ def actions(user_input, current_user)
     actions(user_input, current_user)
   end
 end
+
+
+
+actions(user_input, current_user)
+
+
+
+# User database
+# andre = User.create(name: "Andre", password: "2kool4skool")
+# alex = User.create(name: "Alex", password: "iter8r")
