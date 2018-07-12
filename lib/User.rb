@@ -40,5 +40,13 @@ class User < ActiveRecord::Base
     Drink.find_by(name: drink_name).ingredients
   end
 
-  
+  def delete_fave_drink(drink_name)
+    found = self.find_drink(drink_name)
+    self.drinks.delete(found)
+  end
+
+  def delete_pantry_ingredient(ingredient_name)
+    found = self.find_ingredient(ingredient_name)
+    self.ingredients.delete(found)
+  end
 end
