@@ -141,6 +141,11 @@ def actions(user_input, current_user)
       find = current_user.find_by_id(drink_browse)
       puts "#{find.name} exists! Here are the instructions: "
       puts "#{find.instructions}"
+      counter = 1
+      find.ingredients.each do |ingredient|
+          puts "#{counter}. #{ingredient.name}"
+          counter += 1
+      end
     end
       puts "Is there anything else you'd like to do?"
       user_input = gets.chomp
