@@ -46,12 +46,12 @@ def actions(current_user)
   prompt = TTY::Prompt.new(help_color: :cyan) #enable_color: true)
   user_input = prompt.select("Main Menu:") do |menu|
     menu.per_page 14
-    menu.choice 'Browse All Drinks', "7"
     if current_user.drinks == []
       menu.choice 'Browse Favorite Drinks'.magenta, "2", disabled: '(no favorite drinks)'.light_magenta
     else
       menu.choice 'Browse Favorite Drinks', "2"
     end
+    menu.choice 'Browse All Drinks', "7"
     if current_user.ingredients == []
       menu.choice 'Browse My Pantry'.magenta, "1", disabled: '(empty pantry)'.light_magenta
     else
@@ -109,7 +109,7 @@ def actions(current_user)
       puts "#{ing_count}. #{drink.name}".cyan
       ing_count += 1
     end
-    puts "Do you wish to view this drink? (Y/N)"
+    puts "Do you wish to view a drink? (Y/N)"
     input = gets.chomp.downcase
     if input == 'y' || input == 'yes'
       puts "Which drink are you interested in?"
@@ -284,8 +284,10 @@ def drink_profile(current_user, drink_name)
     box_this_text("Instructions", "cyan", "yes")
     puts "#{find.instructions}"
     puts ""
+    words_hash = {0=>"zero",1=>"one",2=>"two",3=>"three",4=>"four",5=>"five",6=>"six",7=>"seven",8=>"eight",9=>"nine",
+                    10=>"ten",11=>"eleven",12=>"twelve"}
     if rejected.count > 0
-        puts "Do you wish to add the missing ingredients to your pantry? (Y/N)"
+        puts "Add the #{words_hash[rejected.count]} missing ingredients to your pantry? (Y/N)".yellow
         input = gets.chomp.downcase
       if input == 'y' || input == "yes"
         rejected.each do |ingredient|
