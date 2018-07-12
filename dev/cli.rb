@@ -247,9 +247,20 @@ def drink_profile(current_user, drink_name)
     box_this_text("Instructions", "cyan", "yes")
     puts "#{find.instructions}"
     puts ""
-
-    # binding.pry
-    actions(current_user)
+    if rejected.count > 0
+        puts "Do you wish to add the missing ingredients to your pantry? (Y/N)"
+        input = gets.chomp.downcase
+      if input == 'y' || input == "yes"
+        rejected.each do |ingredient|
+          current_user.ingredients << current_user.find_or_create_ingredient(ingredient.name)
+          puts "Added #{ingredient.name} to your pantry!".cyan
+        end
+        actions(current_user)
+    else
+      actions(current_user)
+    end
+  end
+  actions(current_user)
   else
     puts "This drink doesn't exist in your favorites!"
     puts "Is there anything else you'd like to do?"
