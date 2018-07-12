@@ -39,4 +39,6 @@ class User < ActiveRecord::Base
   def find_drink_ingredients(drink_name)
     Drink.find_by(name: drink_name).ingredients
   end
+
+  
 end
