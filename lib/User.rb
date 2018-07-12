@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
   has_many :ingredients, through: :user_pantries
   has_many :favorite_drinks
   has_many :drinks, through: :favorite_drinks
-  validates_uniqueness_of :user_pantries, scope: [:user_id, :ingredient_id]
+#  validates_uniqueness_of :user_pantries, scope: [:user_id, :ingredient_id]
 
   def find_drink(drink_name)
     Drink.find_by(name: drink_name)

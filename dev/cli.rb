@@ -42,21 +42,37 @@ end
 
 def actions(current_user)
   asciiart = Artii::Base.new :font => 'roman'
-  prompt = TTY::Prompt.new(enable_color: true)
+  prompt = TTY::Prompt.new(help_color: :cyan) #enable_color: true)
   user_input = prompt.select("Main Menu:") do |menu|
     menu.per_page 14
     menu.choice 'Browse All Drinks', "7"
-    menu.choice 'See Favorite Drinks', "2"
-    menu.choice 'See My Ingredients', "1"
+    if current_user.drinks == []
+      menu.choice 'See Favorite Drinks'.magenta, "2", disabled: '(no favorite drinks)'.light_magenta
+    else
+      menu.choice 'See Favorite Drinks', "2"
+    end
+    if current_user.ingredients == []
+      menu.choice 'See My Ingredients'.magenta, "1", disabled: '(empty pantry)'.light_magenta
+    else
+      menu.choice 'See My Ingredients', "1"
+    end
     menu.choice '———————————————', "i"
     menu.choice 'Find Drink By Name', "3"
     menu.choice 'Find Ingredient By Name', "4"
     menu.choice '———————————————', "i"
     menu.choice 'Add Ingredient to Pantry', "5"
-    menu.choice 'Remove Ingredient from Pantry', "9"
+    if current_user.ingredients == []
+      menu.choice 'Remove Ingredient from Pantry'.magenta, "9", disabled: '(empty pantry)'.light_magenta
+    else
+      menu.choice 'Remove Ingredient from Pantry', "9"
+    end
     menu.choice '———————————————', "i"
     menu.choice 'Add Favorite Drink', "6"
-    menu.choice 'Remove Favorite Drink', "8"
+    if current_user.drinks == []
+      menu.choice 'Remove Favorite Drink'.magenta, "8", disabled: '(no favorite drinks)'.light_magenta
+    else
+      menu.choice 'Remove Favorite Drink', "8"
+    end
     menu.choice '———————————————', "i"
     menu.choice 'EXIT', "EXIT"
   end
@@ -89,11 +105,11 @@ def actions(current_user)
     actions(current_user)
   elsif user_input == "3"
     puts "Which drink are you looking for?"
-    drink_name = gets.chomp
+    drink_name = gets.chomp.capitalize
     drink_profile(current_user, drink_name)
   elsif user_input == "4"
     puts "Which ingredient are you looking for?"
-    ingredient_name = gets.chomp
+    ingredient_name = gets.chomp.capitalize
     if current_user.find_ingredient(ingredient_name)
       ingredient = current_user.find_ingredient(ingredient_name)
       puts "#{ingredient.name} exists!"
@@ -107,6 +123,7 @@ def actions(current_user)
   elsif user_input == "5"
     puts "What ingredient would you like to add?"
     ingredient_browse = prompt.multi_select("All Ingredients:") do |menu|
+      menu.per_page 10
       Ingredient.all.each do |ingredient|
         menu.choice ingredient.name, ingredient.name
       end
@@ -126,14 +143,21 @@ def actions(current_user)
   elsif user_input == "6"
     puts "What drink(s) would you like to add?"
     drink_browse = prompt.multi_select("All Drinks:") do |menu|
+      menu.per_page 10
       Drink.all.each do |drink|
         menu.choice drink.name, drink.name
       end
       # menu.choice 'EXIT', "EXIT"
     end
     # user_input = gets.chomp
-    current_user.drinks << current_user.find_or_create_drink(drink_browse)
-    puts "Success!"
+    drink_browse.each do |drink|
+      if current_user.drinks.any? {|a| a.name == drink}
+        puts "#{drink} is already in favorites!".red
+      else
+        current_user.drinks << current_user.find_or_create_drink(drink)
+        puts "Added #{drink} to favorites!".cyan
+      end
+    end
     puts "Is there anything else you'd like to do?"
     actions(current_user)
   elsif user_input == "7"
@@ -153,7 +177,7 @@ def actions(current_user)
         end
       end
       drink_browse.each do |drink|
-        current_user.delete_fave_drink(drink_browse)
+        current_user.delete_fave_drink(drink)
         puts "Removed #{drink} from favorites!".cyan
       end
       puts "__________________________\nIs there anything else you'd like to do?"
@@ -211,10 +235,10 @@ def drink_profile(current_user, drink_name)
       counter += 1
     end
     puts ""
-    box_this_text("Missing Ingredients", "cyan", "yes")
     user_ingredients = current_user.ingredients
     rejected = drink_ingredients.reject {|ingredient| user_ingredients.include? ingredient}
     rej_count = 1
+    puts "Missing Ingredients".yellow.underline if rejected != []
     rejected.each do |missing|
       puts "#{rej_count}. #{missing.name}"
       rej_count += 1
