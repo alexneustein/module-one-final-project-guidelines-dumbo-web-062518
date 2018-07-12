@@ -45,6 +45,8 @@ def actions(current_user)
     menu.choice 'Find Ingredient By Name', "4"
     menu.choice 'Add Ingredient to Pantry', "5"
     menu.choice 'Add Favorite Drink', "6"
+    menu.choice 'Remove Favorite Drink', "8"
+    menu.choice 'Remove Pantry Ingredient', "9"
     menu.choice 'EXIT', "EXIT"
   end
   if user_input == "i"
@@ -56,6 +58,8 @@ def actions(current_user)
       menu.choice 'Find Ingredient By Name', "4"
       menu.choice 'Add Ingredient to Pantry', "5"
       menu.choice 'Add Favorite Drink', "6"
+      menu.choice 'Remove Favorite Drink', "8"
+      menu.choice 'Remove Pantry Ingredient', "9"
       menu.choice 'EXIT', "EXIT"
     end
     actions(current_user)
@@ -86,8 +90,14 @@ def actions(current_user)
     end
   elsif user_input == "5"
     puts "What ingredient would you like to add?"
-    user_input = gets.chomp
-    current_user.ingredients << current_user.find_or_create_ingredient(user_input)
+    ingredient_browse = prompt.select("All Ingredients:") do |menu|
+      Ingredient.all.each do |ingredient|
+        menu.choice ingredient.name, ingredient.name
+      end
+        menu.choice 'EXIT', "EXIT"
+      end
+    # user_input = gets.chomp
+    current_user.ingredients << current_user.find_or_create_ingredient(ingredient_browse)
     puts "Success!"
     puts "Is there anything else you'd like to do?"
     actions(current_user)
@@ -126,6 +136,32 @@ def actions(current_user)
     end
       puts "Is there anything else you'd like to do?"
       actions(current_user)
+    elsif user_input == "8"
+      puts "What drink would you like to remove?"
+      drink_browse = prompt.select("All Drinks:") do |menu|
+        current_user.drinks.each do |drink|
+          menu.choice drink.name, drink.name
+        end
+        menu.choice 'EXIT', "EXIT"
+      end
+      # user_input = gets.chomp
+      current_user.delete_fave_drink(drink_browse)
+      puts "Success!"
+      puts "Is there anything else you'd like to do?"
+      actions(current_user)
+  elsif user_input == "9"
+    puts "What drink would you like to remove?"
+    ingredient_browse = prompt.select("All Ingredients:") do |menu|
+      current_user.ingredients.each do |ingredient|
+        menu.choice ingredient.name, ingredient.name
+      end
+      menu.choice 'EXIT', "EXIT"
+    end
+    # user_input = gets.chomp
+    current_user.delete_pantry_ingredient(ingredient_browse)
+    puts "Success!"
+    puts "Is there anything else you'd like to do?"
+    actions(current_user)
   elsif user_input == "EXIT" || user_input == "exit" || user_input == "QUIT" || user_input == "quit"
     exit
   else

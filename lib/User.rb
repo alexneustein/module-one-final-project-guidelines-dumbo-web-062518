@@ -32,18 +32,22 @@ class User < ActiveRecord::Base
     Drink.create(name: drink_name)
   end
 
-  def create_ingredient(ingredient_name)
-
-  end
-
   def find_drink_ingredients(drink_name)
     Drink.find_by(name: drink_name).ingredients
   end
 
   def isFavorite?(drink_name)
     self.drinks.find_by(name: drink_name) ? true : false
-    # a == nil ? a = false : a = true
-    # return a
+  end
+
+  def delete_fave_drink(drink_name)
+    found = self.find_drink(drink_name)
+    self.drinks.delete(found)
+  end
+
+  def delete_pantry_ingredient(ingredient_name)
+    found = self.find_ingredient(ingredient_name)
+    self.ingredients.delete(found)
   end
 
 end
