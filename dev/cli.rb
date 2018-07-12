@@ -123,25 +123,11 @@ def actions(current_user)
   elsif user_input == "7"
     drink_browse = prompt.select("All Drinks:") do |menu|
       Drink.all.each do |drink|
-        menu.choice drink.name, drink.id
+        menu.choice drink.name, drink.name
       end
       menu.choice 'EXIT', "EXIT"
     end
-    # binding.pry
-    if drink_browse != "exit"
-      find = current_user.find_by_id(drink_browse)
-
-      puts "#{find.name} exists! Here are the instructions: "
-      puts "#{find.instructions}"
-      counter = 1
-      find.ingredients.each do |ingredient|
-          puts "#{counter}. #{ingredient.name}"
-          counter += 1
-      end
-      actions(current_user)
-    end
-      puts "Is there anything else you'd like to do?"
-      actions(current_user)
+      drink_profile(current_user, drink_browse)
     elsif user_input == "8"
       puts "What drink would you like to remove?"
       drink_browse = prompt.select("All Drinks:") do |menu|
@@ -193,7 +179,8 @@ def drink_profile(current_user, drink_name)
     puts "FAVORITE DRINK".light_magenta if current_user.isFavorite?(drink_name)
     puts ""
     puts "#{find.instructions}"
-    drink_ingredients = current_user.find_drink_ingredients(drink_name)
+    drink = Drink.find_by(name: drink_name)
+    drink_ingredients = drink.ingredients
     counter = 1
     drink_ingredients.each do |ingredient|
       puts "#{counter}. #{ingredient.name}"
