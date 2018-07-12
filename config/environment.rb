@@ -16,3 +16,4 @@ require_all 'dev'
 # require_relative '../dev/api_communicator.rb'
 ActiveRecord::Base.logger = nil
 # binding.pry
+a = Artii::Base.new :font => 'o8'
