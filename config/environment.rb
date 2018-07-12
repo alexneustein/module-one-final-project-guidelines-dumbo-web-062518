@@ -6,6 +6,7 @@ require 'json'
 require 'pry'
 require 'colorize'
 require 'tty-prompt'
+require 'artii'
 # require 'pry'
 
 ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: 'db/development.db')

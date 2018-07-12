@@ -35,6 +35,7 @@ def find_or_create_user(name)
 end
 
 def actions(current_user)
+  asciiart = Artii::Base.new :font => 'roman'
   prompt = TTY::Prompt.new
   user_input = prompt.select("Main Menu:") do |menu|
     menu.choice 'See My Ingredients', "1"
@@ -69,22 +70,7 @@ def actions(current_user)
   elsif user_input == "3"
     puts "Which drink are you looking for?"
     drink_name = gets.chomp
-    if current_user.find_drink(drink_name)
-      counter = 1
-      drink_ingredients = current_user.find_drink_ingredients(drink_name)
-      find = current_user.find_drink(drink_name)
-      puts "#{find.name} exists! Here are the instructions: "
-      puts "#{find.instructions}"
-      drink_ingredients.each do |ingredient|
-        puts "#{counter}. #{ingredient.name}"
-        counter += 1
-      end
-      actions(current_user)
-    else
-      puts "This drink doesn't exist in your favorites!"
-      puts "Is there anything else you'd like to do?"
-      actions(current_user)
-    end
+    drink_profile(current_user, drink_name)
   elsif user_input == "4"
     puts "Which ingredient are you looking for?"
     ingredient_name = gets.chomp
@@ -128,6 +114,7 @@ def actions(current_user)
     # binding.pry
     if drink_browse != "exit"
       find = current_user.find_by_id(drink_browse)
+
       puts "#{find.name} exists! Here are the instructions: "
       puts "#{find.instructions}"
       counter = 1
@@ -145,4 +132,42 @@ def actions(current_user)
     puts "Command not recognized. Please try again:"
     actions(current_user)
   end
+end
+
+def drink_profile(current_user, drink_name)
+  asciiart = Artii::Base.new :font => 'roman'
+  prompt = TTY::Prompt.new
+  if current_user.find_drink(drink_name)
+    find = current_user.find_drink(drink_name)
+    drink_title = asciiart.asciify("#{find.name}")
+    box_this_text("Drink Profile", "cyan")
+    print "╔"
+    (drink_title.split("\n")[0].length).times { print "═"}
+    puts "╗"
+    puts asciiart.asciify("#{find.name}").light_cyan
+    print "╚"
+    (drink_title.split("\n")[0].length).times { print "═"}
+    puts "╝"
+    puts "FAVORITE DRINK".light_magenta if current_user.isFavorite?(drink_name)
+    puts ""
+    puts "#{find.instructions}"
+    drink_ingredients = current_user.find_drink_ingredients(drink_name)
+    counter = 1
+    drink_ingredients.each do |ingredient|
+      puts "#{counter}. #{ingredient.name}"
+      counter += 1
+    end
+    actions(current_user)
+  else
+    puts "This drink doesn't exist in your favorites!"
+    puts "Is there anything else you'd like to do?"
+    actions(current_user)
+  end
+end
+
+def box_this_text(string, color)
+  print "╔═"
+  (string.length).times { print "═"}
+  puts "═╗"
+  puts "║ " + string.send(color) + " ║"
 end

@@ -8,4 +8,5 @@ gem "require_all"
 gem "rest-client"
 gem "colorize"
 gem 'tty-prompt'
+gem "artii"
 # gem "json"

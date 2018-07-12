@@ -40,5 +40,10 @@ class User < ActiveRecord::Base
     Drink.find_by(name: drink_name).ingredients
   end
 
-  
+  def isFavorite?(drink_name)
+    self.drinks.find_by(name: drink_name) ? true : false
+    # a == nil ? a = false : a = true
+    # return a
+  end
+
 end
