@@ -49,4 +49,6 @@ class User < ActiveRecord::Base
     found = self.find_ingredient(ingredient_name)
     self.ingredients.delete(found)
   end
+
+
 end
