@@ -4,6 +4,7 @@ require_relative '../config/environment'
 
 
 def cli_welcome
+  system("clear")
   asciiart = Artii::Base.new :font => 'roman'
   puts " "
   30.times {print " "}
@@ -54,7 +55,7 @@ def actions(current_user)
     if current_user.ingredients == []
       menu.choice 'See My Ingredients'.magenta, "1", disabled: '(empty pantry)'.light_magenta
     else
-      menu.choice 'See My Ingredients', "1"
+      menu.choice 'See My Ingredients Pantry', "1"
     end
     menu.choice '———————————————', "i"
     menu.choice 'Find Drink By Name', "3"
@@ -196,6 +197,9 @@ def actions(current_user)
     puts "Is there anything else you'd like to do?"
     actions(current_user)
   elsif user_input == "EXIT" || user_input == "exit" || user_input == "QUIT" || user_input == "quit"
+    system("clear")
+    puts "Thanks for using the Access Labs Cocktail Library!"
+    puts "Always drink responsibly. Never drink and drive.".magenta
     exit
   else
     puts "Command not recognized. Please try again:"
@@ -206,6 +210,7 @@ end
 def drink_profile(current_user, drink_name)
   asciiart = Artii::Base.new :font => 'roman'
   prompt = TTY::Prompt.new
+  system("clear")
   if current_user.find_drink(drink_name)
     find = current_user.find_drink(drink_name)
     drink_title = asciiart.asciify("#{find.name}")
