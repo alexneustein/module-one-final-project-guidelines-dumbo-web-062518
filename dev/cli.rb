@@ -42,8 +42,9 @@ end
 
 def actions(current_user)
   asciiart = Artii::Base.new :font => 'roman'
-  prompt = TTY::Prompt.new
+  prompt = TTY::Prompt.new(enable_color: true)
   user_input = prompt.select("Main Menu:") do |menu|
+    menu.per_page 10
     menu.choice 'See My Ingredients', "1"
     menu.choice 'See Favorite Drinks', "2"
     menu.choice 'Find Drink By Name', "3"
@@ -55,21 +56,22 @@ def actions(current_user)
     menu.choice 'Remove Pantry Ingredient', "9"
     menu.choice 'EXIT', "EXIT"
   end
-  if user_input == "i"
-    user_input = prompt.select("Main Menu:") do |menu|
-      menu.choice 'See My Ingredients', "1"
-      menu.choice 'See Favorite Drinks', "2"
-      menu.choice 'Find Drink By Name', "3"
-      menu.choice 'Browse All Drinks', "7"
-      menu.choice 'Find Ingredient By Name', "4"
-      menu.choice 'Add Ingredient to Pantry', "5"
-      menu.choice 'Add Favorite Drink', "6"
-      menu.choice 'Remove Favorite Drink', "8"
-      menu.choice 'Remove Pantry Ingredient', "9"
-      menu.choice 'EXIT', "EXIT"
-    end
-    actions(current_user)
-  elsif user_input == "1"
+  # if user_input == "i"
+  #   user_input = prompt.select("Main Menu:") do |menu|
+  #     menu.per_page 10
+  #     menu.choice 'See My Ingredients', "1"
+  #     menu.choice 'See Favorite Drinks', "2"
+  #     menu.choice 'Find Drink By Name', "3"
+  #     menu.choice 'Browse All Drinks', "7"
+  #     menu.choice 'Find Ingredient By Name', "4"
+  #     menu.choice 'Add Ingredient to Pantry', "5"
+  #     menu.choice 'Add Favorite Drink', "6"
+  #     menu.choice 'Remove Favorite Drink', "8"
+  #     menu.choice 'Remove Pantry Ingredient', "9"
+  #     menu.choice 'EXIT', "EXIT"
+  #   end
+  #   actions(current_user)
+  if user_input == "1"
     current_user.ingredients.each { |ingredient| puts "#{ingredient.name}".cyan }
     puts "Is there anything else you'd like to do?".green
     actions(current_user)
@@ -96,7 +98,7 @@ def actions(current_user)
     end
   elsif user_input == "5"
     puts "What ingredient would you like to add?"
-    ingredient_browse = prompt.select("All Ingredients:") do |menu|
+    ingredient_browse = prompt.multi_select("All Ingredients:") do |menu|
       Ingredient.all.each do |ingredient|
         menu.choice ingredient.name, ingredient.name
       end
@@ -122,6 +124,7 @@ def actions(current_user)
     actions(current_user)
   elsif user_input == "7"
     drink_browse = prompt.select("All Drinks:") do |menu|
+      menu.per_page 10
       Drink.all.each do |drink|
         menu.choice drink.name, drink.name
       end
@@ -130,11 +133,10 @@ def actions(current_user)
       drink_profile(current_user, drink_browse)
     elsif user_input == "8"
       puts "What drink would you like to remove?"
-      drink_browse = prompt.select("All Drinks:") do |menu|
+      drink_browse = prompt.multi_select("All Drinks:") do |menu|
         current_user.drinks.each do |drink|
           menu.choice drink.name, drink.name
         end
-        menu.choice 'EXIT', "EXIT"
       end
       # user_input = gets.chomp
       current_user.delete_fave_drink(drink_browse)
@@ -143,11 +145,10 @@ def actions(current_user)
       actions(current_user)
   elsif user_input == "9"
     puts "What drink would you like to remove?"
-    ingredient_browse = prompt.select("All Ingredients:") do |menu|
+    ingredient_browse = prompt.multi_select("All Ingredients:") do |menu|
       current_user.ingredients.each do |ingredient|
         menu.choice ingredient.name, ingredient.name
       end
-      menu.choice 'EXIT', "EXIT"
     end
     # user_input = gets.chomp
     current_user.delete_pantry_ingredient(ingredient_browse)
@@ -178,14 +179,26 @@ def drink_profile(current_user, drink_name)
     puts "╝"
     puts "FAVORITE DRINK".light_magenta if current_user.isFavorite?(drink_name)
     puts ""
-    puts "#{find.instructions}"
+    box_this_text("Ingredients", "cyan", "yes")
     drink = Drink.find_by(name: drink_name)
     drink_ingredients = drink.ingredients
+    # ingredient_browse = prompt.select("Ingredients:") do |menu|
+    #   drink_ingredients.all.each do |ingredient|
+    #     menu.choice ingredient.name, ingredient.name
+    #   end
+    #   menu.choice 'EXIT', "EXIT"
+    # end
     counter = 1
     drink_ingredients.each do |ingredient|
+      #ingredient.name ==
       puts "#{counter}. #{ingredient.name}"
       counter += 1
     end
+    puts ""
+    box_this_text("Instructions", "cyan", "yes")
+    puts "#{find.instructions}"
+    puts ""
+    # binding.pry
     actions(current_user)
   else
     puts "This drink doesn't exist in your favorites!"
@@ -194,9 +207,14 @@ def drink_profile(current_user, drink_name)
   end
 end
 
-def box_this_text(string, color)
+def box_this_text(string, color, bottom="no")
   print "╔═"
   (string.length).times { print "═"}
   puts "═╗"
   puts "║ " + string.send(color) + " ║"
+  if bottom == "yes"
+    print "╚═"
+    (string.length).times { print "═"}
+    puts "═╝"
+  end
 end

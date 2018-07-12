@@ -1,9 +1,12 @@
 Home screen - photo of a bar/ice cubes 
 Remove "(hint: 'i' for instructions)"
 
-My Ingredients Page
-Menu to highlight ingredients and 
 Updated Drink Profile Page
-Updated Ingredient Profile Page
 Remove Ingredient 
 Remove Drink 
+
+My Ingredients Page
+Menu to highlight ingredients and 
+Updated Ingredient Profile Page
+
+Don't crash when you don' have favorite drinks or ingredients
