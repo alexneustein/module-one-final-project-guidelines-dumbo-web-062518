@@ -48,14 +48,14 @@ def actions(current_user)
     menu.per_page 14
     menu.choice 'Browse All Drinks', "7"
     if current_user.drinks == []
-      menu.choice 'See Favorite Drinks'.magenta, "2", disabled: '(no favorite drinks)'.light_magenta
+      menu.choice 'Browse Favorite Drinks'.magenta, "2", disabled: '(no favorite drinks)'.light_magenta
     else
-      menu.choice 'See Favorite Drinks', "2"
+      menu.choice 'Browse Favorite Drinks', "2"
     end
     if current_user.ingredients == []
-      menu.choice 'See My Ingredients'.magenta, "1", disabled: '(empty pantry)'.light_magenta
+      menu.choice 'Browse My Pantry'.magenta, "1", disabled: '(empty pantry)'.light_magenta
     else
-      menu.choice 'See My Ingredients Pantry', "1"
+      menu.choice 'Browse My Pantry', "1"
     end
     menu.choice '———————————————', "i"
     menu.choice 'Find Drink By Name', "3"
@@ -95,14 +95,46 @@ def actions(current_user)
   elsif user_input == "1"
     box_this_text("My Pantry", "cyan", "yes")
     puts "Empty Pantry!".magenta if current_user.ingredients == []
-    current_user.ingredients.each { |ingredient| puts "#{ingredient.name}".cyan }
+    # current_user.ingredients.each { |ingredient| puts "#{ingredient.name}".cyan }
     puts "____________"
+    ingredient_browse = prompt.select('My Ingredients:') do |menu|
+      current_user.ingredients.each do |ingredient|
+        menu.choice ingredient.name, ingredient.name
+      end
+    end
+    puts "This ingredient is in:"
+    find = Ingredient.find_by(name: ingredient_browse)
+    ing_count = 1
+    find.drinks.each do |drink|
+      puts "#{ing_count}. #{drink.name}".cyan
+      ing_count += 1
+    end
+    puts "Do you wish to view this drink? (Y/N)"
+    input = gets.chomp.downcase
+    if input == 'y' || input == 'yes'
+      puts "Which drink are you interested in?"
+      drink_browse = prompt.select('Drinks:') do |menu|
+        find.drinks.each do |drink|
+          menu.choice drink.name, drink.name
+        end
+      end
+      drink_profile(current_user, drink_browse)
+      actions(current_user)
+    else
+      actions(current_user)
+    end
     actions(current_user)
   elsif user_input == "2"
     box_this_text("Favorite Drinks", "cyan", "yes")
     puts "No Favorite Drinks!".magenta if current_user.drinks == []
-    current_user.drinks.each { |drink| puts "#{drink.name}".cyan }
-    puts "____________"
+    # current_user.drinks.each { |drink| puts "#{drink.name}".cyan }
+    # puts "____________"
+    drink_browse = prompt.select('Favorite Drinks:') do |menu|
+      current_user.drinks.each do |drink|
+        menu.choice drink.name, drink.name
+      end
+    end
+    drink_profile(current_user, drink_browse)
     actions(current_user)
   elsif user_input == "3"
     puts "Which drink are you looking for?"
