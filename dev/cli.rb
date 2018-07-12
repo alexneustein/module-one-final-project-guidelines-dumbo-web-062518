@@ -4,16 +4,22 @@ require_relative '../config/environment'
 
 
 def cli_welcome
-  puts "Welcome to Access Labs' Cocktail Library!".underline
+  asciiart = Artii::Base.new :font => 'roman'
   puts " "
+  30.times {print " "}
+  puts "Welcome to Access Labs'".underline
+  puts " "
+  puts asciiart.asciify("Cocktail").light_blue
+  puts asciiart.asciify("Library").light_blue
 end
 
 def cli_ask_name
   puts "What is your name?".green
+  print "> ".green
 end
 
 def cli_what_to_do
-  puts "What would you like to do? (hint: 'i' for instructions)".green
+  puts "What would you like to do?".green
 end
 
 def cli_input
