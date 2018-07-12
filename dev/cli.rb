@@ -107,8 +107,14 @@ def actions(current_user)
     actions(current_user)
   elsif user_input == "6"
     puts "What drink would you like to add?"
-    user_input = gets.chomp
-    current_user.drinks << current_user.find_or_create_drink(user_input)
+    drink_browse = prompt.select("All Drinks:") do |menu|
+      Drink.all.each do |drink|
+        menu.choice drink.name, drink.name
+      end
+      menu.choice 'EXIT', "EXIT"
+    end
+    # user_input = gets.chomp
+    current_user.drinks << current_user.find_or_create_drink(drink_browse)
     puts "Success!"
     puts "Is there anything else you'd like to do?"
     actions(current_user)
