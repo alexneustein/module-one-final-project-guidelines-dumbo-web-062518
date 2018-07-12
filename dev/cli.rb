@@ -195,9 +195,19 @@ def drink_profile(current_user, drink_name)
       counter += 1
     end
     puts ""
+    box_this_text("Missing Ingredients", "cyan", "yes")
+    user_ingredients = current_user.ingredients
+    rejected = drink_ingredients.reject {|ingredient| user_ingredients.include? ingredient}
+    rej_count = 1
+    rejected.each do |missing|
+      puts "#{rej_count}. #{missing.name}"
+      rej_count += 1
+    end
+    puts ""
     box_this_text("Instructions", "cyan", "yes")
     puts "#{find.instructions}"
     puts ""
+
     # binding.pry
     actions(current_user)
   else
