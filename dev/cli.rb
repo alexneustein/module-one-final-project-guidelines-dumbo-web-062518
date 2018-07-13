@@ -45,8 +45,8 @@ end
 def actions(current_user)
   asciiart = Artii::Base.new :font => 'roman'
   prompt = TTY::Prompt.new(help_color: :cyan) #enable_color: true)
-  user_input = prompt.select("Main Menu:") do |menu|
-    menu.per_page 14
+  user_input = prompt.select("Main Menu:", filter: true) do |menu|
+    menu.per_page 17
     menu.choice 'Browse All Drinks', "7"
     if current_user.drinks == []
       menu.choice 'Browse Favorite Drinks'.magenta, "2", disabled: '(no favorite drinks)'.light_magenta
@@ -70,9 +70,10 @@ def actions(current_user)
     end
     menu.choice 'What can I make?', "11"
     menu.choice '———————————————', "i"
-    menu.choice 'Download New Drink From Web', "9"
+    menu.choice 'Download New Drink From Web', "10"
+    menu.choice 'Create Custom Drink', "12"
     menu.choice '———————————————', "i"
-    menu.choice 'Add Ingredient to Pantry', "5"
+    menu.choice 'Add Ingredient to My Pantry', "5"
     if current_user.ingredients == []
       menu.choice 'Remove Ingredient from Pantry'.magenta, "9", disabled: '(empty pantry)'.light_magenta
     else
@@ -101,7 +102,7 @@ def actions(current_user)
     puts "Empty Pantry!".magenta if current_user.ingredients == []
     # current_user.ingredients.each { |ingredient| puts "#{ingredient.name}".cyan }
     puts "____________"
-    ingredient_browse = prompt.select('My Ingredients:') do |menu|
+    ingredient_browse = prompt.select('My Ingredients:', per_page: 12, filter: true) do |menu|
       current_user.ingredients.each do |ingredient|
         menu.choice ingredient.name, ingredient.name
       end
@@ -113,11 +114,11 @@ def actions(current_user)
       puts "#{ing_count}. #{drink.name}".cyan
       ing_count += 1
     end
-    puts "Do you wish to view a drink? (Y/N)"
+    puts "View one of these drinks? (Y/N)"
     input = gets.chomp.downcase
     if input == 'y' || input == 'yes'
       puts "Which drink are you interested in?"
-      drink_browse = prompt.select('Drinks:') do |menu|
+      drink_browse = prompt.select('Drinks:', filter: true) do |menu|
         find.drinks.each do |drink|
           menu.choice drink.name, drink.name
         end
@@ -133,7 +134,7 @@ def actions(current_user)
     puts "No Favorite Drinks!".magenta if current_user.drinks == []
     # current_user.drinks.each { |drink| puts "#{drink.name}".cyan }
     # puts "____________"
-    drink_browse = prompt.select('Favorite Drinks:') do |menu|
+    drink_browse = prompt.select('Favorite Drinks:', filter: true) do |menu|
       current_user.drinks.each do |drink|
         menu.choice drink.name, drink.name
       end
@@ -159,7 +160,7 @@ def actions(current_user)
     end
   elsif user_input == "5"
     puts "What ingredient would you like to add?"
-    ingredient_browse = prompt.multi_select("All Ingredients:") do |menu|
+    ingredient_browse = prompt.multi_select("All Ingredients:", filter: true) do |menu|
       menu.per_page 10
       Ingredient.all.each do |ingredient|
         menu.choice ingredient.name, ingredient.name
@@ -169,17 +170,17 @@ def actions(current_user)
     # user_input = gets.chomp
     ingredient_browse.each do |ingredient|
       if current_user.ingredients.any? {|a| a.name == ingredient}
-        puts "#{ingredient} is already in pantry!".red
+        puts "#{ingredient} is already in your pantry!".red
       else
         current_user.ingredients << current_user.find_or_create_ingredient(ingredient)
-        puts "Added #{ingredient} to pantry!".cyan
+        puts "Added #{ingredient} to your pantry!".cyan
       end
     end
     puts "Is there anything else you'd like to do?"
     actions(current_user)
   elsif user_input == "6"
     puts "What drink(s) would you like to add?"
-    drink_browse = prompt.multi_select("All Drinks:") do |menu|
+    drink_browse = prompt.multi_select("All Drinks:", filter: true) do |menu|
       menu.per_page 10
       Drink.all.each do |drink|
         menu.choice drink.name, drink.name
@@ -198,7 +199,7 @@ def actions(current_user)
     puts "Is there anything else you'd like to do?"
     actions(current_user)
   elsif user_input == "7"
-    drink_browse = prompt.select("All Drinks:") do |menu|
+    drink_browse = prompt.select("All Drinks:", filter: true) do |menu|
       menu.per_page 10
       Drink.all.each do |drink|
         menu.choice drink.name, drink.name
@@ -208,12 +209,17 @@ def actions(current_user)
       drink_profile(current_user, drink_browse)
     elsif user_input == "10"
       box_this_text("Download New Drink", "light_cyan", "yes")
+
       add_new_drink(search_new_drink)
+      puts "__________________________"
+      actions(current_user)
+    elsif user_input == "12"
+      add_custom_drink(cli_create_custom_drink)
       puts "__________________________"
       actions(current_user)
     elsif user_input == "8"
       puts "What drink would you like to remove?"
-      drink_browse = prompt.multi_select("All Drinks:") do |menu|
+      drink_browse = prompt.multi_select("All Drinks:", filter: true) do |menu|
         current_user.drinks.each do |drink|
           menu.choice drink.name, drink.name
         end
@@ -226,7 +232,7 @@ def actions(current_user)
       actions(current_user)
   elsif user_input == "9"
     puts "What ingredient(s) would you like to remove?"
-    ingredient_browse = prompt.multi_select("All Ingredients:") do |menu|
+    ingredient_browse = prompt.multi_select("All Ingredients:", filter: true) do |menu|
       current_user.ingredients.each do |ingredient|
         menu.choice ingredient.name, ingredient.name
       end
@@ -361,6 +367,7 @@ def compare(user_ingredients)
 def search_new_drink
   # Prompts the user to search for a drink and choose from all available hits
   prompt = TTY::Prompt.new(help_color: :cyan) #enable_color: true)
+  box_this_text("Download New Drink", "light_cyan", "yes")
   wrapper_hash = {}
   wrapper_hash["drinks"] = nil
   while wrapper_hash["drinks"] == nil
@@ -372,11 +379,12 @@ def search_new_drink
     wrapper_hash = get_all_drinks(drink_name)
     if wrapper_hash["drinks"] == nil
       puts "No drinks found!".red
+    else
     end
   end
   puts wrapper_hash["drinks"].length.to_s.red + " drink found online!".red if wrapper_hash["drinks"].length <= 1
   puts wrapper_hash["drinks"].length.to_s.cyan + " drinks found online!".cyan if wrapper_hash["drinks"].length > 1
-  drink_browse = prompt.select("Select a drink to download:") do |menu|
+  drink_browse = prompt.select("Select a drink to download:", filter: true) do |menu|
     menu.per_page 10
     wrapper_hash["drinks"].each do |drink|
       menu.choice drink["strDrink"], drink["strDrink"]
@@ -384,5 +392,51 @@ def search_new_drink
       menu.choice "CANCEL", "CANCEL"
   end
   return drink_browse
+end
+
+
+def cli_create_custom_drink
+  # Prompts the user to create a new drink and returns hash containing custom entries
+  prompt = TTY::Prompt.new(help_color: :cyan) #enable_color: true)
+  box_this_text("Create Custom Drink", "light_cyan", "yes")
+  #Drink name
+  drink_name = "Martini"
+  while Drink.all.find_by(name: drink_name) != nil
+    puts "Name your drink:".green.underline
+    print "> ".green
+    drink_name = gets.chomp.downcase
+    drink_name = drink_name.split.map(&:capitalize).join(' ')
+    if Drink.all.find_by(name: drink_name) != nil
+      puts "A duplicate drink name is already in the database!".red
+      drink_name = "Martini"
+    end
+    if drink_name == "" || drink_name == " " || drink_name == "  "
+      puts "Invalid name!".red
+      drink_name = "Martini"
+    end
+  end
+  #Ingredients
+  puts "#{drink_name} contains what ingredients?".green.underline
+  ingredient_array = []
+  while ingredient_array == []
+    ingredient_array = prompt.multi_select("Select at least one ingredient:", filter: true) do |menu|
+      Ingredient.all.sort_by {|i| i.name}.each do |ingredient|
+        menu.choice ingredient.name, ingredient.name
+      end
+    end
+  end
+  puts "Your ingredients: ".magenta + ingredient_array.to_s.light_magenta
+  #Instructions
+  puts "Preparation instructions:".green.underline
+  new_instructions = gets.chomp
+  puts "Your instructions: ".magenta + new_instructions.light_magenta
+  #Return Hash
+  areyousure = prompt.yes?('Are you sure you want to proceed?'.light_blue)
+  if areyousure
+    custom_drink_hash = {name: drink_name, ingredients: ingredient_array, instructions: new_instructions}
+  else
+    custom_drink_hash = nil
+  end
+  custom_drink_hash
 end
 end

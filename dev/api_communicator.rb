@@ -76,12 +76,14 @@ def drink_and_instruction_seed(drink_names_array)
   end
 end
 
-def get_drink_id_and_ingredient_ids(drink_name_string)
+def get_drink_id_and_ingredient_ids(drink_name_string, ingredient_array=[])
 # Takes a drink name string and returns an id_hash containing the drink ID and an array of the ingredient IDs.
 # Get the drink id from the database
   drink_id = Drink.id_from_name(drink_name_string)
-# Get the ingredients from the website
-  ingredient_array = get_ingredients(get_drink_hash(drink_name_string))
+# Get the ingredients from the website if empty
+  if ingredient_array == []
+    ingredient_array = get_ingredients(get_drink_hash(drink_name_string))
+  end
 # Get the ingredient ids from the database
   ingredient_ids = []
   ingredient_array.each do |ingredient|
@@ -123,6 +125,20 @@ def add_new_drink(drink_name)
   puts "Added drink #{drink_name} to database!".magenta
   make_joiner_entries(Drink, Ingredient, get_drink_id_and_ingredient_ids(drink_name))
   box_this_text("Successfully added #{drink_name}", "light_cyan", "yes")
+end
+
+def add_custom_drink(custom_drink_hash)
+  # takes a custom drink hash, and adds a new drink entry, intructions, any new ingredients, and related associations to the database.
+  if custom_drink_hash == nil
+    return nil
+  end
+  if Drink.all.find_by(name: custom_drink_hash[:name]) != nil
+    puts "A duplicate drink name is already in the database!".red
+    return nil
+  end
+  Drink.find_or_create_by(name: custom_drink_hash[:name], instructions: custom_drink_hash[:instructions])
+  puts "Added drink #{custom_drink_hash[:name]} to database!".magenta
+  make_joiner_entries(Drink, Ingredient, get_drink_id_and_ingredient_ids(custom_drink_hash[:name], custom_drink_hash[:ingredients]))
 end
 
 def bulk_joiner
