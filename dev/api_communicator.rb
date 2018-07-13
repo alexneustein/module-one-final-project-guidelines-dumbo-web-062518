@@ -5,13 +5,20 @@ require 'pry'
 
 
 def get_drink_hash(drink)
-  #gets the drink hash
+  #takes a drink name and downloads and returns the first matching drink hash
   all_drinks = RestClient.get('https://www.thecocktaildb.com/api/json/v1/1/search.php?s=' + drink.to_s)
   wrapper_hash = JSON.parse(all_drinks)
   wrapper_hash["drinks"].kind_of?(Array) ? drink_hash = wrapper_hash["drinks"][0] : drink_hash = wrapper_hash["drinks"]
 end
 
+def get_all_drinks(drink)
+  #takes a drink name and downloads all matching drink hashes
+  all_drinks = RestClient.get('https://www.thecocktaildb.com/api/json/v1/1/search.php?s=' + drink.to_s)
+  wrapper_hash = JSON.parse(all_drinks)
+end
+
 def get_ingredients(drink_hash)
+  # Takes a downloaded drink_hash and returns a an array of ingredients.
   return [] if drink_hash == nil
   ingredient_array = []
   loop_counter = 1
@@ -24,6 +31,7 @@ def get_ingredients(drink_hash)
 end
 
 def get_instructions(drink_hash)
+  # Takes a downloaded drink_hash and returns a string containing recipe instructions.
   return "" if drink_hash == nil
   instruction_string = drink_hash["strInstructions"]
 end
@@ -38,12 +46,17 @@ def get_ingredients_from_drink_names(drink_names_array)
   combined_ingredient_array
 end
 
-def ingredient_seed(drink_names_array)
-  # Takes an array of drink names, finds the drink's ingredients, and creates database entries of the ingredients.
-  master_list_array = get_ingredients_from_drink_names(drink_names_array)
-  master_list_array.each do |ingredient|
+def ingredient_add(ingredient_array)
+  # Takes an array of ingredients, and creates database entries of the ingredients.
+  ingredient_array.each do |ingredient|
     Ingredient.find_or_create_by(name: ingredient)
   end
+end
+
+def ingredient_bulk_seed(drink_names_array)
+  # Takes an array of drink names, finds the drink's ingredients, and creates database entries of the ingredients.
+  master_list_array = get_ingredients_from_drink_names(drink_names_array)
+  ingredient_add(master_list_array)
 end
 
 def build_drinks_and_instructions(drink_names_array)
@@ -83,15 +96,37 @@ def make_joiner_entries(table1, table2, id_hash)
   id_hash[:table2_ids].each do |table2_id|
     table2s = table2.name.downcase.pluralize
     if table1.find_by(id: id_hash[:table1_id]).send(table2s).find {|i| i.id == table2_id} == nil
-      puts "Creating new association!"
+    #  puts "Creating new association!"
       table1.find_by(id: id_hash[:table1_id]).send(table2s) << table2.find_by(id: table2_id)
     else
-      puts "Association already exists!"
+  #    puts "Association already exists!"
     end
   end
 end
 
+def add_new_drink(drink_name)
+  # takes a drink name, and adds a new drink entry, intructions, any new ingredients, and related associations to the database.
+  return nil if drink_name == "CANCEL"
+  if Drink.all.find_by(name: drink_name) != nil
+    puts "This drink is already in the database!".red
+    return nil
+  end
+  drink_hash = get_drink_hash(drink_name)
+  puts "Downloaded drink: ".magenta + drink_name.light_magenta
+  ingredient_array = get_ingredients(drink_hash)
+  puts "Downloaded ingredients: ".magenta + ingredient_array.to_s.light_magenta
+  new_instructions = get_instructions(drink_hash)
+  puts "Downloaded instructions.".magenta
+  ingredient_add(ingredient_array)
+  puts "Added ingredients to database!".magenta
+  Drink.find_or_create_by(name: drink_name, instructions: new_instructions)
+  puts "Added drink #{drink_name} to database!".magenta
+  make_joiner_entries(Drink, Ingredient, get_drink_id_and_ingredient_ids(drink_name))
+  box_this_text("Successfully added #{drink_name}", "light_cyan", "yes")
+end
+
 def bulk_joiner
+  # This development method was used to automatically create associations between all of the initial 20 drinks in the database.
   cocktail_array = ["Martini","Manhattan","Old Fashioned","Mint Julep","Mojito","Margarita","Daiquiri","Tom Collins","Martinez","Brandy Cocktail","Brandy Daisy","Sidecar","Whiskey Sour","Sazerac","New Orleans Fizz","French 75","Negroni","Brandy Alexander","Bronx Cocktail"]
 
   cocktail_array.each do |cocktail|
