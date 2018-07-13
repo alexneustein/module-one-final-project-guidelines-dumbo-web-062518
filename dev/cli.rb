@@ -33,6 +33,7 @@ def cli_input
 end
 
 def find_or_create_user(name)
+  name = name.split.map(&:capitalize).join(' ')
   if User.find_by(name: name) == nil
     puts "Welcome, #{name}!".cyan
   else
@@ -61,13 +62,6 @@ def actions(current_user)
     menu.choice 'Find Drink By Name', "3"
     menu.choice 'Find Ingredient By Name', "4"
     menu.choice '———————————————', "i"
-    menu.choice 'Add Ingredient to Pantry', "5"
-    if current_user.ingredients == []
-      menu.choice 'Remove Ingredient from Pantry'.magenta, "9", disabled: '(empty pantry)'.light_magenta
-    else
-      menu.choice 'Remove Ingredient from Pantry', "9"
-    end
-    menu.choice '———————————————', "i"
     menu.choice 'Add Favorite Drink', "6"
     if current_user.drinks == []
       menu.choice 'Remove Favorite Drink'.magenta, "8", disabled: '(no favorite drinks)'.light_magenta
@@ -75,6 +69,15 @@ def actions(current_user)
       menu.choice 'Remove Favorite Drink', "8"
     end
     menu.choice 'What can I make?', "11"
+    menu.choice '———————————————', "i"
+    menu.choice 'Download New Drink From Web', "9"
+    menu.choice '———————————————', "i"
+    menu.choice 'Add Ingredient to Pantry', "5"
+    if current_user.ingredients == []
+      menu.choice 'Remove Ingredient from Pantry'.magenta, "9", disabled: '(empty pantry)'.light_magenta
+    else
+      menu.choice 'Remove Ingredient from Pantry', "9"
+    end
     menu.choice '———————————————', "i"
     menu.choice 'EXIT', "EXIT"
   end
@@ -203,6 +206,11 @@ def actions(current_user)
       # menu.choice 'EXIT', "EXIT"
     end
       drink_profile(current_user, drink_browse)
+    elsif user_input == "10"
+      box_this_text("Download New Drink", "light_cyan", "yes")
+      add_new_drink(search_new_drink)
+      puts "__________________________"
+      actions(current_user)
     elsif user_input == "8"
       puts "What drink would you like to remove?"
       drink_browse = prompt.multi_select("All Drinks:") do |menu|
@@ -214,7 +222,7 @@ def actions(current_user)
         current_user.delete_fave_drink(drink)
         puts "Removed #{drink} from favorites!".cyan
       end
-      puts "__________________________\nIs there anything else you'd like to do?"
+      puts "__________________________"
       actions(current_user)
   elsif user_input == "9"
     puts "What ingredient(s) would you like to remove?"
@@ -325,6 +333,7 @@ def box_this_text(string, color, bottom="no")
   end
 end
 
+
 # Store an array of arrays (drinks' ingredients)
 # new_arr = drink_arr.map {|drink| drink.ingredients}
 
@@ -332,22 +341,48 @@ end
 def compare(user_ingredients)
   all_drinks = Drink.all
   drink_ingredients = all_drinks.map {|drink| drink.ingredients }
-  comparison = drink_ingredients.each do |ingredients|
-    if user_ingredients == ingredients
-      all_drinks.find do |drink| drink.ingredients == ingredients
-        puts "You can make this drink! #{drink.name}.".cyan
+  count = 0
+   if user_ingredients.count == 0
+     puts "Unfortunately, you cannot make anything.".red
+   elsif user_ingredients.count >= 1
+    drink_ingredients.each do |ingredients|
+      if user_ingredients == ingredients
+        all_drinks.find do |drink| drink.ingredients == ingredients
+        puts "You can make: #{drink.name}.".cyan
+        end
+      elsif user_ingredients != ingredients
+        count += 1
       end
-    else
-      "Unfortunately, you cannot make anything."
+  end
+  puts "Unfortunately, there are #{count} drinks that you can't make.".red
+ end
+
+
+def search_new_drink
+  # Prompts the user to search for a drink and choose from all available hits
+  prompt = TTY::Prompt.new(help_color: :cyan) #enable_color: true)
+  wrapper_hash = {}
+  wrapper_hash["drinks"] = nil
+  while wrapper_hash["drinks"] == nil
+    puts "Search web for drinks:".green
+    print "> ".green
+    drink_name = gets.chomp.downcase
+    drink_name = drink_name.split.map(&:capitalize).join(' ')
+    puts "Searching: " + drink_name
+    wrapper_hash = get_all_drinks(drink_name)
+    if wrapper_hash["drinks"] == nil
+      puts "No drinks found!".red
     end
-  # else
-  #   rejected = drink_ingredients.reject {|ingredient| user_ingredients.include? Ingredient }
-  #   rej_count = 1
-  #   puts "You’re missing these ingredients:".yellow.underline
-  #   rejected.each do |missing|
-	#      puts "#{rej_count}. #{missing.name}"
-	#      rej_count += 1
-  #   end
-   end
-  # "You can make this drink!"
+  end
+  puts wrapper_hash["drinks"].length.to_s.red + " drink found online!".red if wrapper_hash["drinks"].length <= 1
+  puts wrapper_hash["drinks"].length.to_s.cyan + " drinks found online!".cyan if wrapper_hash["drinks"].length > 1
+  drink_browse = prompt.select("Select a drink to download:") do |menu|
+    menu.per_page 10
+    wrapper_hash["drinks"].each do |drink|
+      menu.choice drink["strDrink"], drink["strDrink"]
+    end
+      menu.choice "CANCEL", "CANCEL"
+  end
+  return drink_browse
+end
 end
