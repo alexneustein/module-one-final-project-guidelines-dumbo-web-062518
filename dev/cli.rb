@@ -46,12 +46,12 @@ def actions(current_user)
   prompt = TTY::Prompt.new(help_color: :cyan) #enable_color: true)
   user_input = prompt.select("Main Menu:") do |menu|
     menu.per_page 14
+    menu.choice 'Browse All Drinks', "7"
     if current_user.drinks == []
       menu.choice 'Browse Favorite Drinks'.magenta, "2", disabled: '(no favorite drinks)'.light_magenta
     else
       menu.choice 'Browse Favorite Drinks', "2"
     end
-    menu.choice 'Browse All Drinks', "7"
     if current_user.ingredients == []
       menu.choice 'Browse My Pantry'.magenta, "1", disabled: '(empty pantry)'.light_magenta
     else
