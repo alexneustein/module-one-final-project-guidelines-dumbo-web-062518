@@ -74,6 +74,7 @@ def actions(current_user)
     else
       menu.choice 'Remove Favorite Drink', "8"
     end
+    menu.choice 'What can I make?', "11"
     menu.choice '———————————————', "i"
     menu.choice 'EXIT', "EXIT"
   end
@@ -228,6 +229,11 @@ def actions(current_user)
     end
     puts "Is there anything else you'd like to do?"
     actions(current_user)
+
+  elsif user_input == "11"
+    puts "What can I make?"
+    compare(current_user.ingredients)
+    actions(current_user)
   elsif user_input == "EXIT" || user_input == "exit" || user_input == "QUIT" || user_input == "quit"
     system("clear")
     puts "Thanks for using the Access Labs Cocktail Library!"
@@ -317,4 +323,31 @@ def box_this_text(string, color, bottom="no")
     (string.length).times { print "═"}
     puts "═╝"
   end
+end
+
+# Store an array of arrays (drinks' ingredients)
+# new_arr = drink_arr.map {|drink| drink.ingredients}
+
+# Below compares the current_user's ingredient list against a drink's ingredient list
+def compare(user_ingredients)
+  all_drinks = Drink.all
+  drink_ingredients = all_drinks.map {|drink| drink.ingredients }
+  comparison = drink_ingredients.each do |ingredients|
+    if user_ingredients == ingredients
+      all_drinks.find do |drink| drink.ingredients == ingredients
+        puts "You can make this drink! #{drink.name}.".cyan
+      end
+    else
+      "Unfortunately, you cannot make anything."
+    end
+  # else
+  #   rejected = drink_ingredients.reject {|ingredient| user_ingredients.include? Ingredient }
+  #   rej_count = 1
+  #   puts "You’re missing these ingredients:".yellow.underline
+  #   rejected.each do |missing|
+	#      puts "#{rej_count}. #{missing.name}"
+	#      rej_count += 1
+  #   end
+   end
+  # "You can make this drink!"
 end
